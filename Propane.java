@@ -28,12 +28,12 @@ public class Propane {
 		public void addHydrogen()  throws InterruptedException {
 			
 			H++;
-			
+			//System.out.println("Hydrogen added Count: " +H);
 		}
 		public void removeHydrogen(int n)  throws InterruptedException {
 			
 			H=H-n;
-			
+//			System.out.println("Hydrogen Left: "+H+"---Hydrogen taken away: "+n);
 		}
 
 		public int getHydrogen() { return H;}
@@ -41,24 +41,24 @@ public class Propane {
 		public void addCarbon()  throws InterruptedException {
 			
 			C++;
-			
+			//System.out.println("Carbon added Count: " +C);
 		}
 		public void removeCarbon(int n)  throws InterruptedException {
 			
 			C=C-n;
 			
+//			System.out.println("Carbon Left"+C+"---Carbon taken away"+n);
 		}
 		public int getCarbon() {return C;}
 		
 		public void bond(String atom) throws InterruptedException {
-			
+
 			System.out.println("...Bonding...."+atom);
 			if ((H==8) && (C==3)) {
 				H=0;
 				C=0;
 	    	 }
-			
-			
+
 		}
 		
 		

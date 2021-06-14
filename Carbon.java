@@ -13,38 +13,33 @@ public class Carbon extends Thread {
 	}
 	
 	public void run() {
-		try {
-			sharedPropane.mutex.acquire();
-			sharedPropane.addCarbon(); 
+		try {	 
 
-			if (sharedPropane.getHydrogen() >= 8) 
-
-			{
-
-				System.out.println("---Group ready for bonding---"); 
-
-				sharedPropane.carbonQ.release(3); 
-				sharedPropane.removeCarbon(3);  
-
-				sharedPropane.hydrogensQ.release(8); 
-				sharedPropane.removeHydrogen(8); 
-				
-				
-			} 
+						sharedPropane.mutex.acquire();
+						sharedPropane.addCarbon();
 
 
-			else
-			{
-				sharedPropane.mutex.release(); 
-			}
+						if(sharedPropane.getHydrogen()<8 || sharedPropane.getCarbon()<3)
+						{
+							sharedPropane.mutex.release();
+						}
 
-			sharedPropane.carbonQ.acquire(); 
-			sharedPropane.bond("C" + this.id); 
-			sharedPropane.barrier.b_wait(); 
-			sharedPropane.mutex.release(); 
+						else if(sharedPropane.getHydrogen()>=8 && sharedPropane.getCarbon()>=3)
+						{
+							System.out.println("---Group ready for bonding---c");
+							sharedPropane.carbonQ.release(3);
+							sharedPropane.removeCarbon(3);
 
-		} 
-	    catch (InterruptedException ex) { }
-	   
+							sharedPropane.hydrogensQ.release(8);
+							sharedPropane.removeHydrogen(8);
+						}
+						sharedPropane.carbonQ.acquire();
+						sharedPropane.bond("C"+ this.id);  
+						sharedPropane.barrier.b_wait();
+						sharedPropane.mutex.release();
+	    	  	   	 
+	    }
+	    catch (InterruptedException ex) { /* not handling this  */}
+	   // System.out.println(" ");
 	}
 }

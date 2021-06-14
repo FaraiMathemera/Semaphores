@@ -33,9 +33,9 @@ public class BarrierReusable {
 		barrier2.acquire();
 		
 	}
-
 	public void b_wait() throws InterruptedException{
 		phase1(); //all go through barrier
 		phase2(); // all reset the barrier for reuse
 	}
+
 }
