@@ -5,6 +5,7 @@ public class Carbon extends Thread {
 	private static int carbonCounter =0;
 	private int id;
 	private Propane sharedPropane;
+	public static boolean alreadyExecuted = false;
 	
 	public Carbon(Propane propane_obj) {
 		Carbon.carbonCounter+=1;
@@ -15,28 +16,29 @@ public class Carbon extends Thread {
 	public void run() {
 		try {	 
 
-						sharedPropane.mutex.acquire();
-						sharedPropane.addCarbon();
-
-
-						if(sharedPropane.getHydrogen()<8 || sharedPropane.getCarbon()<3)
-						{
-							sharedPropane.mutex.release();
-						}
-
-						else if(sharedPropane.getHydrogen()>=8 && sharedPropane.getCarbon()>=3)
-						{
-							System.out.println("---Group ready for bonding---c");
+						sharedPropane.mutex.acquire(); 
+							if(!alreadyExecuted) {							
 							sharedPropane.carbonQ.release(3);
-							sharedPropane.removeCarbon(3);
-
 							sharedPropane.hydrogensQ.release(8);
-							sharedPropane.removeHydrogen(8);
+							alreadyExecuted = true;
 						}
-						sharedPropane.carbonQ.acquire();
-						sharedPropane.bond("C"+ this.id);  
-						sharedPropane.barrier.b_wait();
+						
 						sharedPropane.mutex.release();
+						sharedPropane.carbonQ.acquire();
+						sharedPropane.barrier.phase1();
+						sharedPropane.mutex.acquire();
+						
+						if (sharedPropane.getCarbon() == 0 && sharedPropane.getHydrogen() == 0){
+							System.out.println("---Group Ready for bonding---");
+						}
+							
+						sharedPropane.addCarbon();		
+						sharedPropane.bond("C"+this.id);
+						sharedPropane.mutex.release();
+						sharedPropane.barrier.phase2();
+						sharedPropane.carbonQ.release(); 
+						
+						
 	    	  	   	 
 	    }
 	    catch (InterruptedException ex) { /* not handling this  */}

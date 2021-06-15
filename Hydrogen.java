@@ -1,10 +1,13 @@
 package molecule;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Hydrogen extends Thread {
 
 	private static int hydrogenCounter =0;
 	private int id;
 	private Propane sharedPropane;
+	public static boolean flag = true;
+
 	
 	
 	public Hydrogen(Propane propane_obj) {
@@ -16,28 +19,21 @@ public class Hydrogen extends Thread {
 	
 	public void run() {
 		try {	 
-						sharedPropane.mutex.acquire();
-						sharedPropane.addHydrogen();
-
-						
-						if(sharedPropane.getHydrogen()<8 || sharedPropane.getCarbon()<3)
-						{
-							sharedPropane.mutex.release();
-						}
-						else if(sharedPropane.getHydrogen()>=8 && sharedPropane.getCarbon()>=3)
-						{
-							System.out.println("---Group ready for bonding---h");
-							sharedPropane.hydrogensQ.release(8);
-							sharedPropane.removeHydrogen(8);
-
-							sharedPropane.carbonQ.release(3); 
-							sharedPropane.removeCarbon(3);
-						}
-
-						sharedPropane.hydrogensQ.acquire();
-						sharedPropane.bond("H"+ this.id); 
-						sharedPropane.barrier.b_wait();
-						sharedPropane.mutex.release();
+			sharedPropane.mutex.acquire();
+			sharedPropane.mutex.release();
+			sharedPropane.hydrogensQ.acquire();
+			sharedPropane.barrier.phase1();
+			sharedPropane.mutex.acquire();
+			System.out.println("Hy__Carbon: " + sharedPropane.getCarbon() +"--- Hydrogen: "+sharedPropane.getHydrogen());	
+			if (sharedPropane.getCarbon() == 0 && sharedPropane.getHydrogen() == 0){
+				System.out.println("---Group Ready for bonding---");
+			}
+			sharedPropane.addHydrogen();
+			sharedPropane.bond("H"+this.id);
+			sharedPropane.mutex.release();
+			sharedPropane.barrier.phase2();
+			sharedPropane.hydrogensQ.release();
+			
 	    }
 	    catch (InterruptedException ex) { /* not handling this  */}
 	   // System.out.println(" ");
